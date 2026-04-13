@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skólafélagið</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f2ec;
+      --surface: #faf8f4;
+      --text: #1a1a18;
+      --muted: #6b6860;
+      --faint: #b0ada6;
+      --border: #dedad3;
+      --accent: #1a1a18;
+      --font-display: 'Georgia', 'Times New Roman', serif;
+      --font-body: system-ui, -apple-system, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 52px;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: normal;
+      letter-spacing: 0.2px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    .lang-toggle {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--muted);
+      font-family: var(--font-body);
+      transition: background 0.15s, color 0.15s;
+    }
+    .lang-btn.active {
+      background: var(--text);
+      color: var(--bg);
+    }
+    .lang-btn:not(.active):hover { background: var(--border); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 4rem 2rem 3.5rem;
+      border-bottom: 1px solid var(--border);
+      max-width: 860px;
+    }
+
+    .hero-label {
+      font-size: 12px;
+      color: var(--faint);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: normal;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      font-size: 12px;
+      color: var(--faint);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.25rem;
+    }
+
+    .hero-meta a { color: var(--muted); }
+    .hero-meta a:hover { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .col {
+      padding: 2rem;
+    }
+
+    .col:first-child {
+      border-right: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--faint);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── NEWS ── */
+    .news-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .news-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .news-date {
+      font-size: 11px;
+      color: var(--faint);
+      margin-bottom: 4px;
+    }
+
+    .news-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .news-body {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── EVENTS ── */
+    .event-row {
+      display: grid;
+      grid-template-columns: 28px 32px 1fr auto;
+      align-items: baseline;
+      gap: 8px;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .event-row:last-child { border-bottom: none; }
+
+    .event-day { font-size: 14px; font-weight: 500; }
+    .event-mon { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.3px; }
+    .event-name { font-size: 13px; color: var(--text); }
+    .event-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── COMMITTEES ── */
+    .committees-section {
+      padding: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .committee-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .committee-row:hover { opacity: 0.65; }
+    .committee-row:last-child { border-bottom: none; }
+
+    .committee-info {}
+    .committee-name { font-size: 16px; font-weight: 500; margin-bottom: 3px; }
+    .committee-desc { font-size: 13px; color: var(--muted); }
+    .committee-arrow { color: var(--faint); font-size: 16px; }
+
+    /* ── TEAM ── */
+    .team-section {
+      padding: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .team-cell {
+      padding: 1.25rem 1rem;
+      background: var(--surface);
+    }
+    .team-cell + .team-cell { border-left: 1px solid var(--border); }
+
+    .team-initials {
+      font-size: 12px;
+      color: var(--faint);
+      margin-bottom: 8px;
+      font-family: var(--font-display);
+    }
+    .team-name { font-size: 13px; font-weight: 500; line-height: 1.35; margin-bottom: 3px; }
+    .team-role { font-size: 12px; color: var(--muted); }
+
+    /* ── CONTACT ── */
+    .contact-section {
+      padding: 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .contact-left h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: normal;
+      margin-bottom: 0.4rem;
+    }
+    .contact-left p { font-size: 14px; color: var(--muted); }
+
+    .contact-link {
+      display: inline-block;
+      padding: 10px 22px;
+      border: 1px solid var(--text);
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--text);
+      transition: background 0.15s, color 0.15s;
+    }
+    .contact-link:hover {
+      background: var(--text);
+      color: var(--bg);
+      text-decoration: none;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    footer p { font-size: 12px; color: var(--faint); }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-links a { font-size: 12px; color: var(--muted); }
+    .footer-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .hero { padding: 2.5rem 1rem 2rem; }
+      .two-col { grid-template-columns: 1fr; }
+      .col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+      .col { padding: 1.5rem 1rem; }
+      .committees-section, .team-section, .contact-section { padding: 1.5rem 1rem; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .team-cell:nth-child(3) { border-left: none; border-top: 1px solid var(--border); }
+      .team-cell:nth-child(4) { border-top: 1px solid var(--border); }
+      footer { padding: 1rem; }
+    }
+
+    /* ── TRANSLATIONS ── */
+    [data-en] { display: none; }
+    body.en [data-is] { display: none; }
+    body.en [data-en] { display: revert; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Skólafélagið</div>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#frettir" data-is>Fréttir</a><a href="#frettir" data-en>News</a></li>
+      <li><a href="#vidburdir" data-is>Viðburðir</a><a href="#vidburdir" data-en>Events</a></li>
+      <li><a href="#nefndir" data-is>Nefndir</a><a href="#nefndir" data-en>Committees</a></li>
+      <li><a href="#stjorn" data-is>Stjórn</a><a href="#stjorn" data-en>Team</a></li>
+      <li><a href="#samband" data-is>Hafðu samband</a><a href="#samband" data-en>Contact</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('is')">IS</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-label" data-is>Skólaárið 2024–25</div>
+  <div class="hero-label" data-en>School year 2024–25</div>
+
+  <h1>Skólafélagið</h1>
+
+  <p data-is>Við erum hér fyrir þig. Við skipuleggjum viðburði, sitjum á fundum með skólastjórnina og reynum að gera skólalífið eins gott og hægt er. Ef þú hefur hugmynd — við viljum heyra hana.</p>
+  <p data-en>We're here for you. We organise events, sit in on meetings with the school administration, and do our best to make school life worth showing up for. Got an idea? We want to hear it.</p>
+
+  <div class="hero-meta">
+    <span data-is>600+ nemendur</span>
+    <span data-en>600+ students</span>
+    <span data-is>8 nefndir</span>
+    <span data-en>8 committees</span>
+    <a href="mailto:skolafelagid@placeholder.is">skolafelagid@placeholder.is</a>
+  </div>
+</section>
+
+<!-- NEWS + EVENTS -->
+<div class="two-col">
+  <div class="col" id="frettir">
+    <div class="section-label" data-is>Nýjustu fréttir</div>
+    <div class="section-label" data-en>Latest news</div>
+
+    <div class="news-item">
+      <div class="news-date" data-is>11. apríl 2025</div>
+      <div class="news-date" data-en>11 April 2025</div>
+      <div class="news-title" data-is>Vorþing 18. apríl — vertu með!</div>
+      <div class="news-title" data-en>Spring assembly 18 April — come along!</div>
+      <div class="news-body" data-is>Árleg samkoma allra nemenda í aula. Tilkynningar, tónlist og opinn umræðufundur. Mæt.</div>
+      <div class="news-body" data-en>Annual all-student gathering in the aula. Announcements, music, and open discussion. Be there.</div>
+    </div>
+
+    <div class="news-item">
+      <div class="news-date" data-is>3. apríl 2025</div>
+      <div class="news-date" data-en>3 April 2025</div>
+      <div class="news-title" data-is>Menningardagur í garðinum</div>
+      <div class="news-title" data-en>Cultural day in the courtyard</div>
+      <div class="news-body" data-is>Borðum saman, hlustum á tónlist og kynnumst betur. Komdu með eitthvað sem þér líður vel.</div>
+      <div class="news-body" data-en>Food, music, and getting to know each other. Bring something to share if you like.</div>
+    </div>
+
+    <div class="news-item">
+      <div class="news-date" data-is>28. mars 2025</div>
+      <div class="news-date" data-en>28 March 2025</div>
+      <div class="news-title" data-is>Kosningavikan er hér</div>
+      <div class="news-title" data-en>Election week is here</div>
+      <div class="news-body" data-is>Allir nemendur geta boðið sig fram. Frekari upplýsingar senda við á netfang þitt.</div>
+      <div class="news-body" data-en>All students are eligible to run. Further info will be sent to your school email.</div>
+    </div>
+  </div>
+
+  <div class="col" id="vidburdir">
+    <div class="section-label" data-is>Dagatal</div>
+    <div class="section-label" data-en>Upcoming events</div>
+
+    <div class="event-row">
+      <span class="event-day">18</span>
+      <span class="event-mon">Apr</span>
+      <span class="event-name" data-is>Vorþing</span>
+      <span class="event-name" data-en>Spring assembly</span>
+      <span class="event-tag" data-is>Samkoma</span>
+      <span class="event-tag" data-en>Assembly</span>
+    </div>
+    <div class="event-row">
+      <span class="event-day">24</span>
+      <span class="event-mon">Apr</span>
+      <span class="event-name" data-is>Menningardagur</span>
+      <span class="event-name" data-en>Cultural day</span>
+      <span class="event-tag" data-is>Félagslegt</span>
+      <span class="event-tag" data-en>Social</span>
+    </div>
+    <div class="event-row">
+      <span class="event-day">9</span>
+      <span class="event-mon" data-is>Maí</span>
+      <span class="event-mon" data-en>May</span>
+      <span class="event-name" data-is>Kosningadagur</span>
+      <span class="event-name" data-en>Election day</span>
+      <span class="event-tag" data-is>Kosningar</span>
+      <span class="event-tag" data-en>Election</span>
+    </div>
+    <div class="event-row">
+      <span class="event-day">14</span>
+      <span class="event-mon" data-is>Maí</span>
+      <span class="event-mon" data-en>May</span>
+      <span class="event-name" data-is>Glósubankadagur</span>
+      <span class="event-name" data-en>Note bank day</span>
+      <span class="event-tag" data-is>Glósubanki</span>
+      <span class="event-tag" data-en>Notes</span>
+    </div>
+    <div class="event-row">
+      <span class="event-day">30</span>
+      <span class="event-mon" data-is>Maí</span>
+      <span class="event-mon" data-en>May</span>
+      <span class="event-name" data-is>Sumarpartý</span>
+      <span class="event-name" data-en>Summer party</span>
+      <span class="event-tag" data-is>Félagslegt</span>
+      <span class="event-tag" data-en>Social</span>
+    </div>
+  </div>
+</div>
+
+<!-- COMMITTEES -->
+<section class="committees-section" id="nefndir">
+  <div class="section-label" data-is>Nefndirnar okkar</div>
+  <div class="section-label" data-en>Our committees</div>
+
+  <div class="committee-row">
+    <div class="committee-info">
+      <div class="committee-name" data-is>Skemmtinefnd</div>
+      <div class="committee-name" data-en>Events &amp; entertainment</div>
+      <div class="committee-desc" data-is>Dansar, vikur, partý og allt sem gerir skólann skemmtilegri.</div>
+      <div class="committee-desc" data-en>Dances, themed weeks, parties, and everything that makes school more fun.</div>
+    </div>
+    <span class="committee-arrow">→</span>
+  </div>
+  <div class="committee-row">
+    <div class="committee-info">
+      <div class="committee-name" data-is>Velferðarnefnd</div>
+      <div class="committee-name" data-en>Student welfare</div>
+      <div class="committee-desc" data-is>Mötuneyti, sameiginleg rými og andlegt heilbrigði nemenda.</div>
+      <div class="committee-desc" data-en>Cafeteria quality, common areas, and student mental health.</div>
+    </div>
+    <span class="committee-arrow">→</span>
+  </div>
+  <div class="committee-row">
+    <div class="committee-info">
+      <div class="committee-name" data-is>Umhverfisnefnd</div>
+      <div class="committee-name" data-en>Environment</div>
+      <div class="committee-desc" data-is>Endurvinnsla, sjálfbærni og grænar framtaksverkefni í skólanum.</div>
+      <div class="committee-desc" data-en>Recycling, sustainability, and green initiatives around the school.</div>
+    </div>
+    <span class="committee-arrow">→</span>
+  </div>
+  <div class="committee-row">
+    <div class="committee-info">
+      <div class="committee-name" data-is>Kynningarnefnd</div>
+      <div class="committee-name" data-en>Communications</div>
+      <div class="committee-desc" data-is>Samfélagsmiðlar, fréttabréf og þessi vefsíða.</div>
+      <div class="committee-desc" data-en>Social media, newsletter, and this website.</div>
+    </div>
+    <span class="committee-arrow">→</span>
+  </div>
+  <div class="committee-row">
+    <div class="committee-info">
+      <div class="committee-name">Glósubanki</div>
+      <div class="committee-desc" data-is>Safnar og deilir glósum milli nemenda. Líf bjargvættur.</div>
+      <div class="committee-desc" data-en>Collects and shares notes between students. An absolute lifesaver.</div>
+    </div>
+    <span class="committee-arrow">→</span>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team-section" id="stjorn">
+  <div class="section-label" data-is>Stjórnin</div>
+  <div class="section-label" data-en>The team</div>
+  <div class="team-grid">
+    <div class="team-cell">
+      <div class="team-initials">SA</div>
+      <div class="team-name">Sigríður Arna Jónsdóttir</div>
+      <div class="team-role" data-is>Forseti</div>
+      <div class="team-role" data-en>President</div>
+    </div>
+    <div class="team-cell">
+      <div class="team-initials">BG</div>
+      <div class="team-name">Björn Gunnar Sigurðsson</div>
+      <div class="team-role" data-is>Varaforseti</div>
+      <div class="team-role" data-en>Vice-president</div>
+    </div>
+    <div class="team-cell">
+      <div class="team-initials">HE</div>
+      <div class="team-name">Hanna Elín Björnsdóttir</div>
+      <div class="team-role" data-is>Ritari</div>
+      <div class="team-role" data-en>Secretary</div>
+    </div>
+    <div class="team-cell">
+      <div class="team-initials">KÞ</div>
+      <div class="team-name">Kristján Þór Magnússon</div>
+      <div class="team-role" data-is>Gjaldkeri</div>
+      <div class="team-role" data-en>Treasurer</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="samband">
+  <div class="contact-left">
+    <h2 data-is>Hafðu samband</h2>
+    <h2 data-en>Get in touch</h2>
+    <p data-is>Spurning, hugmynd eða kvörtun? Við heyrum í þér.</p>
+    <p data-en>Question, idea, or complaint? We're listening.</p>
+  </div>
+  <a class="contact-link" href="mailto:skolafelagid@placeholder.is">skolafelagid@placeholder.is</a>
+</section>
+
+<footer>
+  <p>Skólafélagið · 2024–25</p>
+  <div class="footer-links">
+    <a href="https://instagram.com" target="_blank">Instagram</a>
+    <a href="#" data-is>Glósubanki</a>
+    <a href="#" data-en>Note bank</a>
+    <a href="#samband" data-is>Hafðu samband</a>
+    <a href="#samband" data-en>Contact</a>
+  </div>
+</footer>
+
+<script>
+  function setLang(lang) {
+    document.body.classList.toggle('en', lang === 'en');
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+    });
+  }
+</script>
+</body>
+</html>
